@@ -53,8 +53,8 @@ jobs:
 
       - name: Check frozen application and prepare artifact
         run: |
-          & .\dist\HongguoDownloader.exe --self-test --self-test-log=dist/self-test-error.txt
-          if ($LASTEXITCODE -ne 0) {
+          $process = Start-Process -FilePath .\dist\HongguoDownloader.exe -ArgumentList @('--self-test', '--self-test-log=dist/self-test-error.txt') -WorkingDirectory $PWD.Path -Wait -PassThru
+          if ($process.ExitCode -ne 0) {
             if (Test-Path .\dist\self-test-error.txt) { Get-Content .\dist\self-test-error.txt }
             throw 'Frozen application self-test failed'
           }
