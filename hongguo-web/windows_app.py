@@ -6,15 +6,15 @@ import ctypes
 import subprocess
 import sys
 import threading
-
-from werkzeug.serving import make_server
-
-from runtime import media_tool
-from server import app
+import traceback
+from pathlib import Path
 
 
 def self_test() -> None:
     """构建后检查静态资源与随包媒体工具是否可用。"""
+    from runtime import media_tool
+    from server import app
+
     with app.test_client() as client:
         for path in ("/", "/static/app.js", "/api/health"):
             response = client.get(path)
@@ -59,6 +59,9 @@ def close_mutex(handle: int) -> None:
 def run_window() -> None:
     """窗口关闭后停止本机 HTTP 服务。"""
     import webview
+    from werkzeug.serving import make_server
+
+    from server import app
 
     http = make_server("127.0.0.1", 0, app, threaded=True)
     worker = threading.Thread(target=http.serve_forever, daemon=True)
@@ -74,8 +77,14 @@ def run_window() -> None:
 
 def main() -> int:
     if "--self-test" in sys.argv:
-        self_test()
-        return 0
+        try:
+            self_test()
+            return 0
+        except Exception:
+            log_arg = next((arg for arg in sys.argv if arg.startswith("--self-test-log=")), "")
+            if log_arg:
+                Path(log_arg.split("=", 1)[1]).write_text(traceback.format_exc(), encoding="utf-8")
+            return 1
     if sys.platform != "win32":
         raise RuntimeError("此入口仅用于 Windows；macOS 请运行 start.command。")
     handle = None
