@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>红果短剧 · 本机下载</title>
+  <style>
+    :root { color-scheme: light; --ink:#142235; --muted:#617084; --line:#dbe2ea; --accent:#1769aa; --bg:#f4f7fa; --panel:#fff; --error:#b52d35; --ok:#19734a; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--bg); color:var(--ink); font:14px/1.5 -apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue",sans-serif; }
+    header { background:#fff; border-bottom:1px solid var(--line); padding:11px max(16px,calc((100vw - 1260px)/2)); }
+    h1 { font-size:19px; margin:0; } h2 { font-size:16px; margin:0 0 10px; } h3 { font-size:15px; margin:0 0 7px; }
+    p { margin:6px 0; } .sub,.muted { color:var(--muted); } .small { font-size:12px; }
+    .sub { margin:2px 0 0; font-size:12px; }
+    main { max-width:1260px; margin:12px auto; padding:0 16px 24px; display:grid; grid-template-columns:minmax(0,1fr) 290px; gap:12px; align-items:start; }
+    .stack { display:grid; grid-template-columns:minmax(0,1fr); gap:12px; min-width:0; } .card { min-width:0; background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:14px; box-shadow:0 3px 12px rgba(25,44,67,.04); }
+    label { display:block; font-weight:600; margin-bottom:4px; } input,select { font:inherit; color:inherit; border:1px solid #b8c5d3; border-radius:7px; background:#fff; padding:7px 9px; min-height:36px; width:100%; }
+    input:focus,select:focus,button:focus-visible,summary:focus-visible { outline:2px solid #79b7ed; outline-offset:2px; } button { font:inherit; border:1px solid transparent; border-radius:7px; padding:7px 11px; min-height:36px; cursor:pointer; background:var(--accent); color:white; font-weight:600; }
+    button.secondary { color:#1c4e75; background:#edf5fc; border-color:#c8dff0; } button.quiet { color:#475a6f; background:white; border-color:var(--line); } button:disabled { opacity:.5; cursor:not-allowed; }
+    .row { display:flex; gap:8px; align-items:end; flex-wrap:wrap; } .grow { flex:1 1 230px; min-width:0; } .tight { flex:0 1 170px; } .actions { display:flex; gap:6px; align-items:center; flex-wrap:wrap; }
+    .results { display:grid; gap:6px; margin-top:10px; max-height:300px; overflow:auto; } .result { width:100%; text-align:left; background:#f9fbfd; color:var(--ink); border:1px solid var(--line); display:flex; gap:10px; align-items:center; }
+    .result:hover,.result.active { border-color:#77a9d1; background:#eef6fc; } .cover { width:38px; height:52px; border-radius:4px; object-fit:cover; background:#e5eaf0; flex:none; }
+    .result-title { display:block; font-weight:700; } .result-meta { display:block; color:var(--muted); font-size:12px; margin-top:3px; }
+    .episode-head { display:flex; justify-content:space-between; gap:8px; align-items:center; flex-wrap:wrap; } .episode-head h2 { margin:0; } .episode-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(70px,1fr)); gap:6px; margin:10px 0; max-height:280px; overflow:auto; }
+    .episode { display:flex; gap:5px; align-items:center; margin:0; padding:6px 5px; border:1px solid var(--line); border-radius:7px; background:#f9fbfd; font-weight:500; cursor:pointer; }
+    .episode:has(input:checked) { border-color:#408fc7; background:#eaf5fe; } .episode input { width:16px; min-height:16px; height:16px; margin:0; accent-color:var(--accent); }
+    .episode.checking { color:#748398; background:#f4f6f8; cursor:wait; }
+    .episode.unavailable,.episode.error { color:#8792a0; background:#edf0f3; border-color:#e0e5ea; cursor:not-allowed; }
+    .episode.error { text-decoration:underline dotted; text-underline-offset:3px; }
+    .divider { border:0; border-top:1px solid var(--line); margin:12px 0; } .notice { padding:7px 9px; border-radius:7px; background:#f0f5fa; color:#40556e; margin:9px 0; }
+    .notice.error { background:#fff0f0; color:var(--error); } .notice.ok { background:#e9f8f0; color:var(--ok); } .job { border:1px solid var(--line); border-radius:8px; padding:10px; margin-top:8px; }
+    .job-head { display:flex; justify-content:space-between; gap:8px; } .job-title { font-weight:700; } .progress { height:7px; background:#e7edf3; border-radius:99px; overflow:hidden; margin:8px 0; } .progress i { display:block; height:100%; background:var(--accent); }
+    details { margin-top:10px; } summary { cursor:pointer; color:#315f83; } .task-list { max-height:240px; overflow:auto; margin:8px 0 0; padding-left:18px; font-size:12px; } .task-list li { margin:4px 0; overflow-wrap:anywhere; }
+    .empty { color:var(--muted); padding:8px 0; } .hint { color:var(--muted); font-size:12px; margin-top:7px; }
+    .settings-head { display:flex; align-items:baseline; justify-content:space-between; gap:8px; margin-bottom:10px; }
+    .settings-head h2 { margin:0; } .settings-state { color:var(--muted); font-size:12px; text-align:right; }
+    .settings-state.ok { color:var(--ok); } .settings-state.error { color:var(--error); }
+    .directory-details { margin:0; } .directory-summary { display:flex; align-items:center; gap:8px; min-width:0; padding:8px 10px; border:1px solid var(--line); border-radius:7px; background:#f9fbfd; list-style:none; }
+    .directory-summary::-webkit-details-marker { display:none; } .directory-summary::marker { content:""; }
+    .directory-path { min-width:0; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--ink); }
+    .directory-action { flex:none; font-size:12px; font-weight:600; color:var(--accent); }
+    .directory-details[open] .directory-summary { margin-bottom:8px; } .directory-editor { display:flex; gap:6px; align-items:center; }
+    .directory-editor input { min-width:0; flex:1; } .directory-editor button { flex:none; }
+    .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+    @media (max-width:900px) { main { grid-template-columns:1fr; } main > aside { order:-1; } header { padding:10px 16px; } }
+  </style>
+</head>
+<body>
+<header><h1>红果短剧 · 本机下载</h1><p class="sub">按剧名或 series_id 查找，选择集数与客户端实际提供的画质，保存到 Mac。</p></header>
+<main>
+  <div class="stack">
+    <section class="card" aria-labelledby="searchTitle">
+      <h2 id="searchTitle">1. 查找短剧</h2>
+      <div class="row">
+        <div class="grow"><label for="query">剧名或 series_id</label><input id="query" value="满院亲戚全是上古大妖第四季" autocomplete="off"></div>
+        <button id="searchBtn">搜索</button>
+      </div>
+      <div id="searchStatus" class="hint" aria-live="polite">输入剧名搜索，或输入 series_id 直接查找剧目。</div>
+      <div id="results" class="results"></div>
+    </section>
+    <section class="card" aria-labelledby="episodeTitle">
+      <div class="episode-head"><h2 id="episodeTitle">2. 选择集数</h2><span id="selectedCount" class="muted">尚未选择剧目</span></div>
+      <div id="seriesInfo" class="notice">先从搜索结果中选择一部剧。</div>
+      <div class="row">
+        <div class="grow"><label for="range">集数范围</label><input id="range" placeholder="例如 1-10, 15, 20-25"></div>
+        <button id="applyRange" class="secondary" disabled>应用范围</button>
+        <button id="selectAll" class="quiet" disabled>全选</button>
+        <button id="clearAll" class="quiet" disabled>清空</button>
+      </div>
+      <div id="episodes" class="episode-grid"></div>
+      <hr class="divider">
+      <div class="row">
+        <div class="grow"><label for="quality">整部剧清晰度</label><select id="quality"><option value="edge:2160">2160p</option><option value="edge:1440">1440p</option><option value="edge:1080" selected>1080p</option><option value="edge:720">720p</option><option value="edge:540">540p</option><option value="edge:480">480p</option><option value="edge:360">360p</option><option value="max">最高可用</option></select></div>
+        <button id="probeBtn" class="secondary" disabled>重新检查各集</button>
+        <button id="downloadBtn" disabled>下载所选集数</button>
+      </div>
+      <p id="qualityStatus" class="hint" aria-live="polite">选择剧目后会按所选清晰度检查各集；不满足的剧集显示为灰色。</p>
+    </section>
+    <section class="card" aria-labelledby="jobsTitle"><h2 id="jobsTitle">3. 下载任务</h2><div id="jobs" class="empty">暂无任务</div></section>
+  </div>
+  <aside class="stack">
+    <section class="card settings-card" aria-labelledby="configTitle">
+      <div class="settings-head"><h2 id="configTitle">下载目录</h2><span id="configStatus" class="settings-state" aria-live="polite">正在检查…</span></div>
+      <details id="downloadSettings" class="directory-details">
+        <summary class="directory-summary"><span id="downloadDirDisplay" class="directory-path">正在读取目录…</span><span class="directory-action">修改</span></summary>
+        <div class="directory-editor"><label for="downloadDir" class="sr-only">下载目录</label><input id="downloadDir" autocomplete="off"><button id="saveConfig">保存</button></div>
+      </details>
+    </section>
+  </aside>
+</main>
+<script src="/static/app.js" defer></script>
+</body>
+</html>

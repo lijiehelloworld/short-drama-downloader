@@ -1,5 +1,9 @@
  短剧下载神器开源版介绍
 
+## 新版：按剧名或 series_id 选集下载
+
+[`hongguo-web/`](hongguo-web/README.md) 提供独立的本机 Web 版：逐集检测清晰度，画质不足的剧集不可选；支持 macOS 启动脚本和 Windows WebView2 单文件 EXE。Windows 构建见 [GitHub Actions](.github/workflows/build-hongguo-windows.yml)。下文仍是原有开源版的说明。
+
 ## 项目定位
 
 短剧下载神器开源版是一个 Windows 本地短剧搜索与下载辅助工具，提供桌面端和浏览器端两种使用方式。项目面向个人学习、资料整理和开源二次开发，代码结构尽量保持简单，便于阅读、修改和重新打包。
@@ -120,7 +124,6 @@ py -3.11 -m PyInstaller --clean --noconfirm 短剧下载神器桌面版.spec
 ## 开源说明
 
 本项目提供完整源码，允许学习、修改和二次开发。提交仓库时建议包含源码、依赖文件、打包配置、介绍文档和必要的静态资源，不建议提交 `build`、`dist`、`__pycache__` 等构建产物。
-
 
 
 

@@ -1,0 +1,5 @@
+Flask>=3.0,<4
+requests>=2.31,<3
+pycryptodome>=3.20,<4
+betterproto==1.2.5
+gmssl>=3.2,<4
